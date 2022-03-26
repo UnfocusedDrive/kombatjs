@@ -1,60 +1,5 @@
-// import Spawn from "@unfocused/spawn";
-
-
-const _ = {
-  isDOM: value => value instanceof Element,
-  isObject: value => typeof value === 'object',
-  isStr: value => typeof value === 'string',
-  camel2Kebab: string => string.split('').map(s => s === s.toUpperCase() ? `-${s.toLowerCase()}` : s).join('')
-};
-
-
-const Spawn = (props = {}) => {
-  if (_.isStr(props)) {
-    return document.createTextNode(props);
-  }
-
-  const { children, events = {}, mountEl, style = {}, tag = 'div' } = props;
-  const el = document.createElement(tag);
-  el.setAttribute('style', Object.keys(style).map(key => `${_.camel2Kebab(key)}: ${style[key]};`).join(' '));
-
-  function appendChild(child) {
-    // console.log('appendChild', child);
-
-    if (_.isDOM(child)) {
-      el.appendChild(child);
-    } else if (_.isObject(child)) {
-      if (child.innerHTML) {
-        el.innerHTML = child.innerHTML;
-      }
-    } else if (_.isStr(child)) {
-      el.appendChild(Spawn(child));
-    } else {
-      // el.innerHTML = child;
-    }
-  };
-
-  // Append Children
-  if (children) {
-    if (Array.isArray(children)) {
-      children.forEach(child => appendChild(child));
-    } else {
-      appendChild(children);
-    }
-  }
-
-  // Attach Event Listeners
-  Object.keys(events).forEach(key => {
-    el.addEventListener(key, events[key]);
-  });
-
-  // Mount to parent
-  if (mountEl) {
-    mountEl.append(el);
-  }
-
-  return el;
-};
+import Spawn, { Mount, Respawn } from "@unfocused/spawn";
+import _ from '../../util/common';
 
 // Sub-Zero Character Sprite
 const SUB_ZERO_SPRITE = {
@@ -1520,11 +1465,7 @@ export default class Character {
       ...state
     };
     this.render();
-    // this.el.replaceWith(Spawn());
-
-    console.log('set state', state, this.el, this);
   }
-
 
   render(lifecycle) {
     const { debug, mountEl } = this.state;
@@ -1546,12 +1487,9 @@ export default class Character {
     };
 
     if (lifecycle === 'mount') {
-      this.el = Spawn({
-        ...props,
-        mountEl
-      });
+      this.el = Mount(mountEl, (Spawn(props)));
     } else {
-      this.el.replaceWith(Spawn(props));
+      this.el = Respawn(this.el, Spawn(props));
     }
 
     // ifx this on update... lifecycle
