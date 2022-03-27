@@ -4,12 +4,12 @@ const path = require('path');
 
 module.exports = {
   devServer: {
-    contentBase: './dist',
+    contentBase: './lib',
   },
-  entry: './src/index.js',
+  entry: './src/export.js',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'lib')
   },
   module: {
     rules: [
