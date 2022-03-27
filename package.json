@@ -4,6 +4,11 @@
   "description": "Prepare for Kombat.",
   "private": true,
   "main": "src/index.js",
+  "files": [
+    "dist",
+    "lib",
+    "src"
+  ],
   "scripts": {
     "build": "npm run build-standalone && npm run build-lib",
     "build-standalone": "webpack --mode=production",
