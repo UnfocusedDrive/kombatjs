@@ -3,50 +3,40 @@
  */
 import Spawn, { Mount } from "@unfocused/spawn";
 import Character from "./components/Character/Character";
+import CharacterOld from "./components/Character/Character_old";
 import _ from './util/common';
 import ARENA_SPRITE from './assets/sprites/arena';
 
- export default class App {
-   constructor(props) {
+export default class App {
+  constructor(props) {
      const { debug = false, mountEl }  = props;
 
-     const track = Spawn({
-      className: 'track',
-      mountEl: container,
-      children: el => el.innerHTML = ARENA_SPRITE.floor,
-      style: {
-        background: 'gray',
-        position: 'absolute',
-        left: 0
-      }
-    });
-
-     const container = Spawn({
-       className: 'app',
-       children: track,
-       style: {
-         background: 'gray',
-         position: 'absolute',
-         display: 'flex',
-         alignItems: 'center',
-         justifyContent: 'center',
-         overflow: 'hidden',
-         left: 0,
-         top: 0,
-         right: 0,
-         bottom: 0
-       }
-     });
+     this.characters = [
+      new Character({
+        debug,
+        onChange: (key, value, cb) => this.handlePositionChange(0, key, value, cb),
+        name: 'Player 1'
+      }),
+      new Character({
+        name: 'Player 2',
+        debug,
+        direction: 'left',
+        keyBindings: {},
+        position: 400
+      })
+    ];
+     this.trackEl = this.renderTrack();
+     const container = this.render();
 
      const characters = [
-       new Character({
+       new CharacterOld({
          debug,
          onChange: (key, value, cb) => this.handlePositionChange(0, key, value, cb),
-         mountEl: track,
+         mountEl: this.trackEl,
          name: 'Player 1'
        }),
-       new Character({
-         mountEl: track,
+       new CharacterOld({
+         mountEl: this.trackEl,
          name: 'Player 2',
          debug,
          direction: 'left',
@@ -56,7 +46,7 @@ import ARENA_SPRITE from './assets/sprites/arena';
      ];
 
      this.state = {
-       arena: track,
+       arena: this.trackEl,
        characters,
        debug
      }
@@ -93,13 +83,18 @@ import ARENA_SPRITE from './assets/sprites/arena';
 
 
      this.el = Mount(mountEl, container);
-
-
-
+     this.attachEvents();
      return this;
-   }
+  }
 
-   handlePositionChange = (player, key, value, cb) => {
+  attachEvents() {
+    document.body.addEventListener('keydown', this.handleKeyDown);
+  }
+
+  handleKeyDown(e) {
+  }
+
+  handlePositionChange = (player, key, value, cb) => {
      const player1Bounds = this.state.characters[0].el.getBoundingClientRect();
      const player2Bounds = this.state.characters[1].el.getBoundingClientRect();
      const arenaBounds = this.state.arena.getBoundingClientRect();
@@ -123,5 +118,39 @@ import ARENA_SPRITE from './assets/sprites/arena';
      } else {
        cb(value);
      }
-   }
- }
+  }
+
+  renderTrack() {
+    return Spawn({
+      className: 'track',
+      children: el => {
+        el.innerHTML = ARENA_SPRITE.floor;
+        this.characters.forEach(character => el.appendChild(character.el))
+      },
+      style: {
+        background: 'gray',
+        position: 'absolute',
+        left: 0
+      }
+    });
+  }
+
+  render() {
+    return Spawn({
+      className: 'app',
+      children: this.trackEl,
+      style: {
+        background: 'gray',
+        position: 'absolute',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0
+      }
+    });
+  }
+}
