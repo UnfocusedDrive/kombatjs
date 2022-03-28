@@ -1,5 +1,4 @@
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 module.exports = {
@@ -8,8 +7,12 @@ module.exports = {
   },
   entry: './src/export.js',
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'lib')
+    path: path.resolve(__dirname, 'lib'),
+    filename: 'index.js',
+    library: {
+      name:'kombatjs',
+      type: 'umd'
+    }
   },
   module: {
     rules: [
@@ -41,9 +44,6 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      title: 'KombatJS',
-    }),
     new CleanWebpackPlugin()
   ]
 };
