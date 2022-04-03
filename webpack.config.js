@@ -6,7 +6,8 @@ module.exports = {
   devServer: {
     contentBase: './dist',
   },
-  entry: './src/index.js',
+  entry: './src/index.ts',
+  devtool: 'inline-source-map',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist')
@@ -14,7 +15,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$|\.jsx$/,
+        test: /\.ts$|\.js$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader"
@@ -39,6 +40,9 @@ module.exports = {
         ]
       }
     ]
+  },
+  resolve: {
+    extensions: ['.ts', '.js'],
   },
   plugins: [
     new HtmlWebpackPlugin({
