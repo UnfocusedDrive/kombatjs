@@ -101,13 +101,11 @@ export default class CharacterOld {
   }
 
   updateElFrame(frame) {
-    // console.log('updateElFrame', frame);
     this.el.innerHTML = frame;
   }
 
   animate = (count = 0) => {
     let position = count % this.state.sprite.length;
-    // console.log('animateMe', count, position, this.state.sprite[position]);
 ``
     // replace sprite frame every n seconds
     setTimeout(() => {
@@ -144,7 +142,6 @@ export default class CharacterOld {
     const { moveLeft, moveRight, punch } = this.state.keyBindings;
 
 
-    console.log('handleKeyDown', this.el.getBoundingClientRect());
 
 
     let action;
@@ -174,7 +171,6 @@ export default class CharacterOld {
         transform = '';
     }
 
-    console.log('handleKeyDown', e, direction, this.state.move);
 
 
     if (action === 'move') {

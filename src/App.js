@@ -9,7 +9,15 @@ import ARENA_SPRITE from './assets/sprites/arena';
 
 export default class App {
   constructor(props) {
-     const { debug = false, mountEl }  = props;
+     const { debug = false, mountEl } = props;
+     this.props = {
+      ...props,
+      debug,
+      mountEl
+     };
+
+     this.handleKeyDown = this.handleKeyDown.bind(this);
+     this.handleKeyUp = this.handleKeyUp.bind(this);
 
      this.characters = [
       new Character({
@@ -89,9 +97,46 @@ export default class App {
 
   attachEvents() {
     document.body.addEventListener('keydown', this.handleKeyDown);
+    document.body.addEventListener('keyup', this.handleKeyUp);
   }
 
   handleKeyDown(e) {
+    const { key } = e;
+
+    console.log('handleKeyDown')
+    switch(key) {
+      case 'ArrowRight':
+        this.setState({ moving: 'e' });
+        this.characters[0].setProps({
+          moving: this.state.moving,
+          characterState: 'walk'
+        });
+        this.moveCharacter();
+    }
+  }
+
+  handleKeyUp() {
+    this.setState({ moving: null });
+        this.characters[0].setProps({
+          moving: this.state.moving,
+          characterState: 'stance'
+        });
+  }
+
+  moveCharacter() {
+    if (this.state.moving) {
+      setTimeout(() => {
+        this.moveCharacter();
+      }, 10);
+    }
+
+  }
+
+  setState(state) {
+    this.state = {
+      ...this.state,
+      ...state
+    }
   }
 
   handlePositionChange = (player, key, value, cb) => {
@@ -103,19 +148,11 @@ export default class App {
      const bounds = this.state.characters[player].el.getBoundingClientRect();
      const right = value + bounds.width;
      const wall = this.state.characters[1].state.position;
-     console.log('handlePositionChange', {
-       player,
-       key,
-       value,
-       cb,
-       player1Bounds,
-       player2Bounds,
-       arenaBounds
-     });
+
 
      if (right >= wall || value <= 0) {
-       console.log('STOPPP');
-     } else {
+      /// something....
+    } else {
        cb(value);
      }
   }
