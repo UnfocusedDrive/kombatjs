@@ -2,12 +2,19 @@ import Spawn from "@unfocused/spawn";
 import _ from '../../util/common';
 import SUB_ZERO_SPRITE from '../../assets/sprites/subZero';
 
+export enum FrameStates {
+  stance = 'stance'
+}
+
+interface CharacterProps {
+  characterState: FrameStates
+}
+
 export default class Character {
   constructor(props = {}) {
     this.props = {
-      characterState: 'stance',
-      ...props
-    };
+      characterState: FrameStates.stance
+    } as CharacterProps;
     this.sprite = SUB_ZERO_SPRITE;
     this.animateCharacter = this.animateCharacter.bind(this);
     this.el = this.render();

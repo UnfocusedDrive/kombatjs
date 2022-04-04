@@ -2,9 +2,9 @@
  * KombatJS. aka Mortal Kombat JS.
  */
 import Spawn, { Mount } from "@unfocused/spawn";
-import Character from "./components/Character/Character";
+import Character, { FrameStates } from "./components/Character/Character";
 import CharacterOld from "./components/Character/Character_old";
-import _ from './util/common';
+import _ from './util/common.ts';
 import ARENA_SPRITE from './assets/sprites/arena';
 
 export default class App {
@@ -119,7 +119,7 @@ export default class App {
     this.setState({ moving: null });
         this.characters[0].setProps({
           moving: this.state.moving,
-          characterState: 'stance'
+          characterState: FrameStates.stance
         });
   }
 
