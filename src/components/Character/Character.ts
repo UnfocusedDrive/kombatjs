@@ -1,3 +1,4 @@
+// @ts-ignore
 import Spawn from "@unfocused/spawn";
 import _ from '../../util/common';
 import SUB_ZERO_SPRITE from '../../assets/sprites/subZero';
@@ -11,9 +12,15 @@ interface CharacterProps {
 }
 
 export default class Character {
+  el: HTMLElement;
+  props: CharacterProps;
+  sprite: any;
+
   constructor(props = {}) {
     this.props = {
-      characterState: FrameStates.stance
+      direction: 'e',
+      characterState: FrameStates.stance,
+      ...props
     } as CharacterProps;
     this.sprite = SUB_ZERO_SPRITE;
     this.animateCharacter = this.animateCharacter.bind(this);
@@ -62,6 +69,20 @@ export default class Character {
       ...this.props,
       ...props
     };
+
+    this.updateDirection();
+  }
+
+  updateDirection() {
+    const { direction } = this.props;
+    let transform;
+    if (direction === 'e') {
+      transform = 'scaleX(1)';
+    } else {
+      transform = 'scaleX(-1)';
+    }
+
+    this.el.style.transform = transform;
   }
 
   render() {
@@ -69,7 +90,10 @@ export default class Character {
     const { sprite } = this;
     return Spawn({
       className: 'character',
-      children: el => el.innerHTML = sprite[characterState][0]
+      children: el => el.innerHTML = sprite[characterState][0],
+      style: {
+        display: 'inline-block'
+      }
     });
   }
 };

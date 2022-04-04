@@ -1,6 +1,7 @@
 /**
  * KombatJS. aka Mortal Kombat JS.
  */
+// @ts-ignore
 import Spawn, { Mount } from "@unfocused/spawn";
 import Character, { FrameStates } from "./components/Character/Character";
 import CharacterOld from "./components/Character/Character_old";
@@ -8,7 +9,12 @@ import _ from './util/common.ts';
 import ARENA_SPRITE from './assets/sprites/arena';
 
 export default class App {
-  constructor(props) {
+  characters: any[];
+  state: any;
+  trackEl: HTMLElement;
+  props: any;
+
+  constructor(props = {}) {
      const { debug = false, mountEl } = props;
      this.props = {
       ...props,
@@ -37,20 +43,20 @@ export default class App {
      const container = this.render();
 
      const characters = [
-       new CharacterOld({
-         debug,
-         onChange: (key, value, cb) => this.handlePositionChange(0, key, value, cb),
-         mountEl: this.trackEl,
-         name: 'Player 1'
-       }),
-       new CharacterOld({
-         mountEl: this.trackEl,
-         name: 'Player 2',
-         debug,
-         direction: 'left',
-         keyBindings: {},
-         position: 400
-       })
+      //  new CharacterOld({
+      //    debug,
+      //    onChange: (key, value, cb) => this.handlePositionChange(0, key, value, cb),
+      //    mountEl: this.trackEl,
+      //    name: 'Player 1'
+      //  }),
+      //  new CharacterOld({
+      //    mountEl: this.trackEl,
+      //    name: 'Player 2',
+      //    debug,
+      //    direction: 'left',
+      //    keyBindings: {},
+      //    position: 400
+      //  })
      ];
 
      this.state = {
@@ -103,15 +109,25 @@ export default class App {
   handleKeyDown(e) {
     const { key } = e;
 
-    console.log('handleKeyDown')
     switch(key) {
       case 'ArrowRight':
         this.setState({ moving: 'e' });
         this.characters[0].setProps({
           moving: this.state.moving,
-          characterState: 'walk'
+          characterState: 'walk',
+          direction: 'e'
         });
         this.moveCharacter();
+        break;
+        case 'ArrowLeft':
+          this.setState({ moving: 'w' });
+          this.characters[0].setProps({
+            moving: this.state.moving,
+            characterState: 'walk',
+            direction: 'w'
+          });
+          this.moveCharacter();
+          break;
     }
   }
 
