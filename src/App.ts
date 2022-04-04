@@ -9,6 +9,7 @@ import _ from './util/common.ts';
 import ARENA_SPRITE from './assets/sprites/arena';
 
 export default class App {
+  el: HTMLElement;
   characters: any[];
   state: any;
   trackEl: HTMLElement;
@@ -29,14 +30,24 @@ export default class App {
       new Character({
         debug,
         onChange: (key, value, cb) => this.handlePositionChange(0, key, value, cb),
-        name: 'Player 1'
+        name: 'Player 1',
+        style: {
+          position: 'absolute',
+          left: 78,
+          top: -62
+        }
       }),
       new Character({
         name: 'Player 2',
         debug,
-        direction: 'left',
+        direction: 'w',
         keyBindings: {},
-        position: 400
+        position: 400,
+        style: {
+          position: 'absolute',
+          left: 478,
+          top: -62
+        }
       })
     ];
      this.trackEl = this.renderTrack();
@@ -106,27 +117,32 @@ export default class App {
     document.body.addEventListener('keyup', this.handleKeyUp);
   }
 
-  handleKeyDown(e) {
+  handleKeyDown(e: any) {
     const { key } = e;
 
     switch(key) {
       case 'ArrowRight':
-        this.setState({ moving: 'e' });
-        this.characters[0].setProps({
-          moving: this.state.moving,
-          characterState: 'walk',
-          direction: 'e'
-        });
-        this.moveCharacter();
-        break;
-        case 'ArrowLeft':
-          this.setState({ moving: 'w' });
+        if (!this.state.moving) {
+          this.setState({ moving: 'e' });
           this.characters[0].setProps({
             moving: this.state.moving,
             characterState: 'walk',
-            direction: 'w'
+            direction: 'e'
           });
           this.moveCharacter();
+        }
+
+        break;
+        case 'ArrowLeft':
+          if (!this.state.moving) {
+            this.setState({ moving: 'w' });
+            this.characters[0].setProps({
+              moving: this.state.moving,
+              characterState: 'walk',
+              direction: 'w'
+            });
+            this.moveCharacter();
+          }
           break;
     }
   }
@@ -139,8 +155,26 @@ export default class App {
         });
   }
 
+  getNextLeft(el, direction) {
+    const inc = 1;
+    // const { direction } = this.props;
+    const num = parseInt(el.style.left, 10);
+    let value;
+
+    if (direction === 'e') {
+      value = num + inc;
+    } else {
+      value = num - inc;
+    }
+
+    return `${value}px`;
+  }
+
   moveCharacter() {
     if (this.state.moving) {
+      const character = this.characters[0];
+      const { direction } = character.props;
+      character.el.style.left = this.getNextLeft(character.el, direction);
       setTimeout(() => {
         this.moveCharacter();
       }, 10);

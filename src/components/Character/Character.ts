@@ -8,7 +8,9 @@ export enum FrameStates {
 }
 
 interface CharacterProps {
-  characterState: FrameStates
+  characterState: FrameStates,
+  direction: 'e' | 'w',
+  style: any
 }
 
 export default class Character {
@@ -73,7 +75,7 @@ export default class Character {
     this.updateDirection();
   }
 
-  updateDirection() {
+  getTransform() {
     const { direction } = this.props;
     let transform;
     if (direction === 'e') {
@@ -82,17 +84,23 @@ export default class Character {
       transform = 'scaleX(-1)';
     }
 
-    this.el.style.transform = transform;
+    return transform;
+  }
+
+  updateDirection() {
+    this.el.style.transform = this.getTransform();
   }
 
   render() {
-    const { characterState } = this.props;
+    const { characterState, style } = this.props;
     const { sprite } = this;
     return Spawn({
       className: 'character',
-      children: el => el.innerHTML = sprite[characterState][0],
+      children: (el: HTMLElement) => el.innerHTML = sprite[characterState][0],
       style: {
-        display: 'inline-block'
+        display: 'inline-block',
+        transform: this.getTransform(),
+        ...style
       }
     });
   }
