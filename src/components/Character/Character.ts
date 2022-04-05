@@ -4,7 +4,9 @@ import _ from '../../util/common';
 import SUB_ZERO_SPRITE from '../../assets/sprites/subZero';
 
 export enum FrameStates {
-  stance = 'stance'
+  stance = 'stance',
+  walk = 'walk',
+  punch = 'punch'
 }
 
 interface CharacterProps {
@@ -31,16 +33,17 @@ export default class Character {
     return this;
   }
 
-  animateCharacter(prevStep = 0) {
-    setTimeout(() => {
+  animateCharacter() {
+    let prevStep = 0;
+
+    setInterval(() => {
       const { characterState } = this.props;
       const { sprite } = this;
       const frames = sprite[characterState];
       const count = frames.length;
       const { step, nextStep } = this.getSteps(prevStep, count, frames);
-
       this.el.innerHTML = frames[step];
-      this.animateCharacter(nextStep);
+      prevStep = nextStep;
     }, 100);
   }
 
@@ -66,7 +69,7 @@ export default class Character {
     }
   }
 
-  setProps(props) {
+  setProps(props: CharacterProps) {
     this.props = {
       ...this.props,
       ...props
