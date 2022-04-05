@@ -126,38 +126,40 @@ export default class App {
           this.setState({ moving: 'e' });
           this.characters[0].setProps({
             moving: this.state.moving,
-            characterState: 'walk',
+            characterState: FrameStates.walk,
             direction: 'e'
           });
           this.moveCharacter();
         }
-
         break;
-        case 'ArrowLeft':
-          if (!this.state.moving) {
-            this.setState({ moving: 'w' });
-            this.characters[0].setProps({
-              moving: this.state.moving,
-              characterState: 'walk',
-              direction: 'w'
-            });
-            this.moveCharacter();
-          }
-          break;
+      case 'ArrowLeft':
+        if (!this.state.moving) {
+          this.setState({ moving: 'w' });
+          this.characters[0].setProps({
+            moving: this.state.moving,
+            characterState: FrameStates.walk,
+            direction: 'w'
+          });
+          this.moveCharacter();
+        }
+        break;
+      case ' ':
+        this.characters[0].setProps({
+          characterState: FrameStates.punch
+        });
     }
   }
 
   handleKeyUp() {
     this.setState({ moving: null });
-        this.characters[0].setProps({
-          moving: this.state.moving,
-          characterState: FrameStates.stance
-        });
+      this.characters[0].setProps({
+        moving: this.state.moving,
+        characterState: FrameStates.stance
+      });
   }
 
   getNextLeft(el, direction) {
     const inc = 1;
-    // const { direction } = this.props;
     const num = parseInt(el.style.left, 10);
     let value;
 

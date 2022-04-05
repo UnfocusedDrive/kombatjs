@@ -9,7 +9,7 @@ export enum FrameStates {
   punch = 'punch'
 }
 
-interface CharacterProps {
+export interface CharacterProps {
   characterState: FrameStates,
   direction: 'e' | 'w',
   style: any
