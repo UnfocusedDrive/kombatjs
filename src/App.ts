@@ -108,28 +108,28 @@ export default class App {
         }
         break;
       case ' ':
-        this.characters[0].setProps({
-          characterState: FrameStates.punch
-        });
-        const nextHealth = Math.max(0, this.characters[1].props.health - 1);
-        this.characters[1].setProps({
-          health: nextHealth
-        });
-        this.healthBars[1].setProps({
-          health: nextHealth
-        });
+        if (!this.state.action) {
+          this.setState({
+            action: 'punch'
+          });
 
-
-        console.log(this.characters[1].props.health)
+          this.characters[0].setProps({
+            characterState: FrameStates.punch
+          });
+          this.punchCharacter();
+        }
     }
   }
 
   handleKeyUp() {
-    this.setState({ moving: null });
-      this.characters[0].setProps({
-        moving: this.state.moving,
-        characterState: FrameStates.stance
-      });
+    this.setState({
+      action: null,
+       moving: null
+    });
+    this.characters[0].setProps({
+      moving: this.state.moving,
+      characterState: FrameStates.stance
+    });
   }
 
   getDistance() {
@@ -141,6 +141,10 @@ export default class App {
 
   getLeft(el) {
     return parseInt(el.style.left, 10);
+  }
+
+  isInRange() {
+    return this.getDistance() <= 90;
   }
 
   getNextLeft(el: HTMLElement, direction: CharacterProps['direction']): string {
@@ -158,21 +162,27 @@ export default class App {
     return `${value}px`;
   }
 
-  moveCharacter() {
-    if (this.state.moving) {
-      const test = this.getDistance();
 
-
-
-
-      if (test <= 90) {
-        console.log('in range', test);
-
+  punchCharacter() {
+    if (this.state.action === 'punch') {
+      if (this.isInRange()) {
+        const nextHealth = Math.max(0, this.characters[1].props.health - 1);
+        this.characters[1].setProps({
+          health: nextHealth
+        });
+        this.healthBars[1].setProps({
+          health: nextHealth
+        });
       }
 
+      setTimeout(() => {
+        this.punchCharacter();
+      }, 10);
+    }
+  }
 
-
-
+  moveCharacter() {
+    if (this.state.moving) {
       const character = this.characters[0];
       const { direction } = character.props;
       character.el.style.left = this.getNextLeft(character.el, direction);
