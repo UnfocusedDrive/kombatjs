@@ -3,7 +3,8 @@
  */
 // @ts-ignore
 import Spawn, { Mount } from "@unfocused/spawn";
-import Character, { FrameStates } from "./components/Character/Character";
+import HealthBar from "./components/HealthBar/HealthBar";
+import Character, { CharacterProps, FrameStates } from "./components/Character/Character";
 import CharacterOld from "./components/Character/Character_old";
 import _ from './util/common.ts';
 import ARENA_SPRITE from './assets/sprites/arena';
@@ -22,9 +23,26 @@ export default class App {
       debug,
       mountEl
      };
+     this.state = {
+       moving: false
+     };
 
      this.handleKeyDown = this.handleKeyDown.bind(this);
      this.handleKeyUp = this.handleKeyUp.bind(this);
+
+
+     this.healthBars = [
+      new HealthBar({
+        style: {
+          left: 0
+        }
+      }),
+       new HealthBar({
+         style: {
+           right: 0
+         }
+       })
+     ];
 
      this.characters = [
       new Character({
@@ -52,60 +70,6 @@ export default class App {
     ];
      this.trackEl = this.renderTrack();
      const container = this.render();
-
-     const characters = [
-      //  new CharacterOld({
-      //    debug,
-      //    onChange: (key, value, cb) => this.handlePositionChange(0, key, value, cb),
-      //    mountEl: this.trackEl,
-      //    name: 'Player 1'
-      //  }),
-      //  new CharacterOld({
-      //    mountEl: this.trackEl,
-      //    name: 'Player 2',
-      //    debug,
-      //    direction: 'left',
-      //    keyBindings: {},
-      //    position: 400
-      //  })
-     ];
-
-     this.state = {
-       arena: this.trackEl,
-       characters,
-       debug
-     }
-
-     // Debug Mode
-     // 1) Will show boxes, over characters
-     // Each bug will show on the side, the height and width in px
-     if (debug) {
-       Spawn({
-         parentEl: mountEl,
-         children: [
-           Spawn({
-             tag: 'button',
-             children: 'Toggle Debug Mode',
-             events: {
-               click: () => {
-                 this.state.characters[0].setState({debug: false});
-               }
-             },
-           }),
-           ...characters.map(character => Spawn({
-             children: `${character.state.name} X Position: XXXX`
-           }))
-         ],
-         style: {
-           position: 'absolute',
-           top: 20,
-           left: 20,
-           background: 'white'
-         }
-       });
-
-     }
-
 
      this.el = Mount(mountEl, container);
      this.attachEvents();
@@ -147,6 +111,16 @@ export default class App {
         this.characters[0].setProps({
           characterState: FrameStates.punch
         });
+        const nextHealth = Math.max(0, this.characters[1].props.health - 1);
+        this.characters[1].setProps({
+          health: nextHealth
+        });
+        this.healthBars[1].setProps({
+          health: nextHealth
+        });
+
+
+        console.log(this.characters[1].props.health)
     }
   }
 
@@ -158,9 +132,21 @@ export default class App {
       });
   }
 
-  getNextLeft(el, direction) {
+  getDistance() {
+    const [player1, player2] = this.characters;
+
+    return Math.abs(this.getLeft(player1.el) - this.getLeft(player2.el));
+
+  }
+
+  getLeft(el) {
+    return parseInt(el.style.left, 10);
+  }
+
+  getNextLeft(el: HTMLElement, direction: CharacterProps['direction']): string {
     const inc = 1;
-    const num = parseInt(el.style.left, 10);
+    // const num = parseInt(el.style.left, 10);
+    const num = this.getLeft(el);
     let value;
 
     if (direction === 'e') {
@@ -174,9 +160,23 @@ export default class App {
 
   moveCharacter() {
     if (this.state.moving) {
+      const test = this.getDistance();
+
+
+
+
+      if (test <= 90) {
+        console.log('in range', test);
+
+      }
+
+
+
+
       const character = this.characters[0];
       const { direction } = character.props;
       character.el.style.left = this.getNextLeft(character.el, direction);
+
       setTimeout(() => {
         this.moveCharacter();
       }, 10);
@@ -227,7 +227,10 @@ export default class App {
   render() {
     return Spawn({
       className: 'app',
-      children: this.trackEl,
+      children: [
+        ...this.healthBars.map(bar => bar.el),
+        this.trackEl
+      ],
       style: {
         background: 'gray',
         position: 'absolute',

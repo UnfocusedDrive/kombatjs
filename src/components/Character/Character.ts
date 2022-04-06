@@ -24,6 +24,7 @@ export default class Character {
     this.props = {
       direction: 'e',
       characterState: FrameStates.stance,
+      health: 100,
       ...props
     } as CharacterProps;
     this.sprite = SUB_ZERO_SPRITE;
