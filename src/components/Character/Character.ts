@@ -4,6 +4,7 @@ import _ from '../../util/common';
 import SUB_ZERO_SPRITE from '../../assets/sprites/subZero';
 
 export enum FrameStates {
+  hit = 'hit',
   stance = 'stance',
   walk = 'walk',
   punch = 'punch'

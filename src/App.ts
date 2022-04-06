@@ -130,6 +130,10 @@ export default class App {
       moving: this.state.moving,
       characterState: FrameStates.stance
     });
+
+    this.characters[1].setProps({
+      characterState: FrameStates.stance
+    });
   }
 
   getDistance() {
@@ -162,10 +166,15 @@ export default class App {
     return `${value}px`;
   }
 
-
   punchCharacter() {
     if (this.state.action === 'punch') {
       if (this.isInRange()) {
+        if (this.characters[1].props.characterState !== FrameStates['hit']) {
+          this.characters[1].setProps({
+            characterState: FrameStates.hit
+          });
+        }
+
         const nextHealth = Math.max(0, this.characters[1].props.health - 1);
         this.characters[1].setProps({
           health: nextHealth
@@ -173,6 +182,12 @@ export default class App {
         this.healthBars[1].setProps({
           health: nextHealth
         });
+      } else {
+        if (this.characters[1].props.characterState === FrameStates['hit']) {
+          this.characters[1].setProps({
+            characterState: FrameStates.stance
+          });
+        }
       }
 
       setTimeout(() => {
