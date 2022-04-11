@@ -5,18 +5,19 @@
 import Spawn, { Mount } from "@unfocused/spawn";
 import HealthBar from "./components/HealthBar/HealthBar";
 import Character, { CharacterProps, FrameStates } from "./components/Character/Character";
-import CharacterOld from "./components/Character/Character_old";
-import _ from './util/common.ts';
 import ARENA_SPRITE from './assets/sprites/arena';
 
 export default class App {
   el: HTMLElement;
+  healthBars: any[];
   characters: any[];
   state: any;
   trackEl: HTMLElement;
   props: any;
 
-  constructor(props = {}) {
+  constructor(props = {} as App['props']) {
+    const health = 100 * 10;
+
      const { debug = false, mountEl } = props;
      this.props = {
       ...props,
@@ -33,19 +34,24 @@ export default class App {
 
      this.healthBars = [
       new HealthBar({
+        health,
         style: {
-          left: 0
+          left: 20,
+          top: 20
         }
       }),
        new HealthBar({
+         health,
          style: {
-           right: 0
+           right: 20,
+           top: 20
          }
        })
      ];
 
      this.characters = [
       new Character({
+        health,
         debug,
         onChange: (key, value, cb) => this.handlePositionChange(0, key, value, cb),
         name: 'Player 1',
@@ -56,6 +62,7 @@ export default class App {
         }
       }),
       new Character({
+        health,
         name: 'Player 2',
         debug,
         direction: 'w',
@@ -140,10 +147,9 @@ export default class App {
     const [player1, player2] = this.characters;
 
     return Math.abs(this.getLeft(player1.el) - this.getLeft(player2.el));
-
   }
 
-  getLeft(el) {
+  getLeft(el: HTMLElement) {
     return parseInt(el.style.left, 10);
   }
 
@@ -153,7 +159,6 @@ export default class App {
 
   getNextLeft(el: HTMLElement, direction: CharacterProps['direction']): string {
     const inc = 1;
-    // const num = parseInt(el.style.left, 10);
     const num = this.getLeft(el);
     let value;
 
@@ -176,12 +181,11 @@ export default class App {
         }
 
         const nextHealth = Math.max(0, this.characters[1].props.health - 1);
-        this.characters[1].setProps({
+        const nextProps = {
           health: nextHealth
-        });
-        this.healthBars[1].setProps({
-          health: nextHealth
-        });
+        };
+        this.characters[1].setProps(nextProps);
+        this.healthBars[1].setProps(nextProps);
       } else {
         if (this.characters[1].props.characterState === FrameStates['hit']) {
           this.characters[1].setProps({

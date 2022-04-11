@@ -5,14 +5,18 @@
 
 // @ts-ignore
 import Spawn, { Respawn } from "@unfocused/spawn";
+import FullHealthSprite from '../../assets/sprites/healthBar/full';
+import EmptyHealthSprite from '../../assets/sprites/healthBar/empty';
 
 export default class HealthBar {
   el: HTMLElement;
   props: any;
 
-  constructor(props = {}) {
+  constructor(props = {} as HealthBar['props']) {
+    const { health = 100 } = props;
     this.props = {
-      health: 100,
+      health,
+      maxHealth: health,
       style: {},
       ...props
     };
@@ -21,8 +25,13 @@ export default class HealthBar {
     return this;
   }
 
+  getHealthPercent() {
+    const { health, maxHealth } = this.props;
 
-  setProps(props: any) {
+    return (health / maxHealth) * 100;
+  }
+
+  setProps(props: HealthBar['props']) {
     this.props = {
       ...this.props,
       ...props
@@ -32,22 +41,27 @@ export default class HealthBar {
   }
 
   render() {
-    const { health, style } = this.props;
+    const { style } = this.props;
     return Spawn({
       style: {
         position: 'absolute',
         top: 0,
-        width: 200,
-        height: 40,
-        background: 'red',
+        width: 163,
         ...style
       },
       children: [
         Spawn({
+          children: (el: HTMLElement) => el.innerHTML = EmptyHealthSprite,
           style: {
-            width: `${health}%`,
-            height: '100%',
-            background: 'green'
+            position: 'absolute'
+          }
+        }),
+        Spawn({
+          children: (el: HTMLElement) => el.innerHTML = FullHealthSprite,
+          style: {
+            position: 'absolute',
+            width: `${this.getHealthPercent()}%`,
+            overflow: 'hidden'
           }
         })
       ]

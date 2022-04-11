@@ -22,10 +22,12 @@ export default class Character {
   sprite: any;
 
   constructor(props = {}) {
+    const health = 100 * 10;
+
     this.props = {
       direction: 'e',
       characterState: FrameStates.stance,
-      health: 100,
+      health,
       ...props
     } as CharacterProps;
     this.sprite = SUB_ZERO_SPRITE;
